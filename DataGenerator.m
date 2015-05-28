@@ -16,16 +16,17 @@ addpath('C:\Users\sunyue\Desktop\Machine Learning\Project\WorkSpace') % path of 
 % % Read the data and Class
 % [SampleImg, SignClass] = ReadImageData();
 load('ReadingRawData.mat');
-DataSpace2 = [];
-% Letter = [B, E, F, H, J, L, O, V, W, Y]
-Letter = [2, 5, 6, 8, 10, 12, 15, 22, 23, 25];
-[SampleImg, SignClass] = LetterAssign(Letter, SampleImg, SignClass);
+DataSpace = [];
+% % Letter = [B, E, F, H, J, L, O, V, W, Y]
+% Letter = [2, 5, 6, 8, 10, 12, 15, 22, 23, 25];
+% [SampleImg, SignClass] = LetterAssign(Letter, SampleImg, SignClass);
 
 
 %% Preprocessing the image
 % The goal of the preprocessing
 % Processing a certain image
-for i = 1:100
+imgcell = {};
+for i = 212:212
     num = i;
     Img = SampleImg{num};
     HSVsample = Img(1:20,1:20,1:3);
@@ -33,7 +34,7 @@ for i = 1:100
     Filtervalue = mean(mean(HSVsample));
     % HSV filter in order to eliminate the back ground
     ImgHSV = HSVfilter(Img, [Filtervalue(1), Filtervalue(2), Filtervalue(3)], [0.4 0.4 0.3]);
-    for j = 1:7 % erosion diameter 1~7
+    for j = 2:2 % erosion diameter 1~7
         seD = strel('diamond',j);
         se90 = strel('line', 10, 90);
         se0 = strel('line', 10, 0);
@@ -68,11 +69,14 @@ for i = 1:100
             [xmin,xmax,ymin,ymax] = Corpinfo(ImgTarget); % the crop coordinate
             [xmin,xmax,ymin,ymax] = Boundin(xmin,xmax,ymin,ymax,ImgTarget); % Bound in the crop coordinate
             ImgTarget = ImgTarget(abs(xmin)+1:abs(xmax),abs(ymin):abs(ymax)); % crop the ImgHand
+            ImgTarget = imresize(ImgTarget, [380 230]);
+            imgcell{k} = ImgTarget; %#ok<SAGROW>
+            imshow(ImgTarget)
             ImgTarget = imresize(ImgTarget, [38 23]);            
-            DataSpace2 = [DataSpace2; transpose(ImgTarget(:))]; %#ok<AGROW>
+            DataSpace = [DataSpace; transpose(ImgTarget(:))]; %#ok<AGROW>
         end
     end
     fprintf('\nData Generation Finished %4.2f\n',i/2.6);
 end
 
-csvwrite('SignLanguageData2.csv',DataSpace2);
+% csvwrite('SignLanguageData2.csv',DataSpace);
